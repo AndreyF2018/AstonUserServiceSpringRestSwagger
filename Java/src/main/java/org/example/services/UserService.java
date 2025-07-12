@@ -9,23 +9,47 @@ public class UserService {
 
     private final UserDao userDao;
 
-    public UserService () {
+    public UserService() {
         this.userDao = new UserDao();
     }
 
-    public User findById (int id)  {
-        return userDao.findById(id);
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
     }
 
-    public User findByEmail (String email)  {
-        return userDao.findByEmail(email);
+
+    public User findById(int id) {
+        try {
+            return userDao.findById(id);
+        }
+        // В методах, возвращающих значения, исключения перехватываются в сервисе
+        // и возвращают null
+        catch (RuntimeException e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
+
     }
 
-    public List<User> findAll()  {
-        return userDao.findAll();
+    public User findByEmail(String email) {
+        try {
+            return userDao.findByEmail(email);
+        } catch (RuntimeException e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
     }
 
-    public void save(User user)  {
+    public List<User> findAll() {
+        try {
+            return userDao.findAll();
+        } catch (RuntimeException e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public void save(User user) {
         userDao.save(user);
     }
 
@@ -34,6 +58,10 @@ public class UserService {
     }
 
     public void delete(User user) {
-        userDao.delete(user);
+        try {
+            userDao.delete(user);
+        } catch (RuntimeException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 }

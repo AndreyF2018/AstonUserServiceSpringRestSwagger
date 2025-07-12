@@ -92,6 +92,12 @@ public class UserDao {
                 transaction.commit();
                 logger.debug("User with id = {} updated successfully: ", user.getId());
             }
+            catch (EntityNotFoundException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
             catch (Exception e) {
                 if (transaction.isActive()) {
                     transaction.rollback();

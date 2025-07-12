@@ -31,11 +31,11 @@ public class Main {
                     System.out.print("User id = ");
                     int id = scanner.nextInt();
                     scanner.nextLine();
-                    if (userController.finById(id) == null) {
+                    if (userController.findById(id) == null) {
                         System.out.println("User not found");
                     } else
                     {
-                        System.out.println(userController.finById(id));
+                        System.out.println(userController.findById(id));
                     }
                     break;
                 }
@@ -52,9 +52,11 @@ public class Main {
                 }
                 case 3: {
                     List<User> users = userController.findAll();
-                    System.out.println("Users:");
-                    for (User user : users) {
-                        System.out.println(user);
+                    if (users != null) {
+                        System.out.println("Users:");
+                        for (User user : users) {
+                            System.out.println(user);
+                        }
                     }
                     break;
                 }
@@ -97,7 +99,7 @@ public class Main {
                     try {
                         // Если получится запарсить в int - значит введено число,
                         // и поиск по id
-                        updatedUser = userController.finById(Integer.parseInt(idOrEmail));
+                        updatedUser = userController.findById(Integer.parseInt(idOrEmail));
                     } catch (NumberFormatException e) {
                         // В противном случае - поиск по email
                         updatedUser = userController.findByEmail(idOrEmail);
@@ -144,7 +146,7 @@ public class Main {
                     String idOrEmail = scanner.nextLine().toLowerCase();
                     User deleteddUser;
                     try {
-                        deleteddUser = userController.finById(Integer.parseInt(idOrEmail));
+                        deleteddUser = userController.findById(Integer.parseInt(idOrEmail));
                     } catch (NumberFormatException e) {
                         deleteddUser = userController.findByEmail(idOrEmail);
                     }

@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import org.example.dao.UserDao;
 import org.example.models.User;
 import org.example.services.UserService;
 
@@ -9,45 +10,28 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController () {
+    public UserController() {
         this.userService = new UserService();
     }
 
-    public User finById (int id)  {
-        try {
-            return userService.findById(id);
-        }
-        // В методах, возвращающих значения, исключения перехватывают контроллеры
-        // и возвращают null
-        catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
-
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    public User findByEmail(String email)  {
-        try {
-            return userService.findByEmail(email);
-        }
-        catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+    public User findById(int id) {
+        return userService.findById(id);
     }
 
-    public List<User> findAll()  {
-        try{
-            return userService.findAll();
-        }
-        catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+    public User findByEmail(String email) {
+        return userService.findByEmail(email);
     }
 
-    public void save(User user)  {
-            userService.save(user);
+    public List<User> findAll() {
+        return userService.findAll();
+    }
+
+    public void save(User user) {
+        userService.save(user);
     }
 
     public void update(User user) {
@@ -55,11 +39,6 @@ public class UserController {
     }
 
     public void delete(User user) {
-        try {
-            userService.delete(user);
-        }
-        catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        userService.delete(user);
     }
 }
