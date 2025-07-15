@@ -2,7 +2,6 @@ package org.example.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -11,7 +10,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
     private int age;
     private LocalDateTime created_at;
@@ -72,12 +71,7 @@ public class User {
                 ", created_at=" + created_at;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id == user.id || email.equals(user.getEmail());
-    }
+
 
     @Override
     public int hashCode() {

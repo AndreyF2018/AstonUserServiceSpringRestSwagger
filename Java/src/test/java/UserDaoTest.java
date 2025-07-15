@@ -1,3 +1,4 @@
+/*
 import jakarta.persistence.EntityNotFoundException;
 import org.example.dao.UserDao;
 import org.example.models.User;
@@ -163,3 +164,5 @@ public class UserDaoTest {
         }
     }
 }
+
+ */

@@ -1,67 +1,64 @@
 package org.example.services;
 
+import jakarta.transaction.Transactional;
 import org.example.dao.UserDao;
 import org.example.models.User;
+import org.example.repos.UserRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Service
 public class UserService {
 
-    private final UserDao userDao;
+    private final UserRepo userRepo;
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public UserService() {
-        this.userDao = new UserDao();
+
+    public UserService(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
 
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
+
+    public Optional<User> findById(int id) {
+        return userRepo.findById(id);
     }
 
-
-    public User findById(int id) {
-        try {
-            return userDao.findById(id);
-        }
-        // В методах, возвращающих значения, исключения перехватываются в сервисе
-        // и возвращают null
-        catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
-
-    }
-
-    public User findByEmail(String email) {
-        try {
-            return userDao.findByEmail(email);
-        } catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+    public Optional<User> findByEmail(String email) {
+        return userRepo.findByEmail(email);
     }
 
     public List<User> findAll() {
-        try {
-            return userDao.findAll();
-        } catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return userRepo.findAll();
     }
 
+    @Transactional
     public void save(User user) {
-        userDao.save(user);
-    }
-
-    public void update(User user) {
-        userDao.update(user);
-    }
-
-    public void delete(User user) {
-        try {
-            userDao.delete(user);
-        } catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
+        if (userRepo.existsByEmail(user.getEmail())) {
+            String errorMessage = "Failed to save user. User with email + " + user.getEmail() + " already exists";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
+        logger.debug("User with email = {} saved successfully: ", user.getEmail());
+        userRepo.save(user);
+    }
+
+    @Transactional
+    public void update(User user) {
+        if (!userRepo.existsByEmail(user.getEmail())) {
+            String errorMessage = "Failed to update user. User with email + " + user.getEmail() + " does not exist";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        userRepo.save(user);
+    }
+
+    @Transactional
+    public void delete(User user) {
+        userRepo.delete(user);
     }
 }
