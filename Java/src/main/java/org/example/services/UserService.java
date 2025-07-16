@@ -37,24 +37,34 @@ public class UserService {
     }
 
     @Transactional
-    public void save(User user) {
+    public User save(User user) {
         if (userRepo.existsByEmail(user.getEmail())) {
-            String errorMessage = "Failed to save user. User with email + " + user.getEmail() + " already exists";
+            String errorMessage = "Failed to save user. User with email + " + user.getEmail() + " already exists.";
             logger.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
-        logger.debug("User with email = {} saved successfully: ", user.getEmail());
-        userRepo.save(user);
+        if (user.getEmail() == null || user.getName() == null) {
+            String errorMessage = "Failed to save user. Email and name are required.";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        logger.debug("User with email = {} saved successfully.", user.getEmail());
+        return userRepo.save(user);
     }
 
     @Transactional
-    public void update(User user) {
-        if (!userRepo.existsByEmail(user.getEmail())) {
-            String errorMessage = "Failed to update user. User with email + " + user.getEmail() + " does not exist";
+    public User update(User user) {
+        if (!userRepo.existsById(user.getId())) {
+            String errorMessage = "Failed to update user. This user does not exist";
             logger.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
-        userRepo.save(user);
+        if (user.getEmail() == null || user.getName() == null) {
+            String errorMessage = "Failed to update user. Email and name are required.";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return userRepo.save(user);
     }
 
     @Transactional

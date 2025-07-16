@@ -4,12 +4,12 @@ import org.example.dto.UserDto;
 import org.example.dto.UserMapper;
 import org.example.models.User;
 import org.example.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -52,15 +53,36 @@ public class UserController {
         return usersDto;
     }
 
-    public void save(User user) {
-        userService.save(user);
+    @PostMapping
+    public ResponseEntity<UserDto> save(@RequestBody UserDto userDto) {
+        User user = UserMapper.toEntity(userDto);
+        User savedUser = userService.save(user);
+        if (savedUser != null) {
+            logger.debug("User with id = {} saved successfully.", savedUser.getId());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(savedUser));
     }
 
-    public void update(User user) {
-        userService.update(user);
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> update (@PathVariable int id, @RequestBody UserDto userDto) {
+        User user = UserMapper.toEntity(userDto);
+        // Чтобы не создался дубликат
+        user.setId(id);
+        User updatedUser = userService.update(user);
+        if (updatedUser != null) {
+            logger.debug("User with id = {} updated successfully.", updatedUser.getId());
+        }
+        return ResponseEntity.ok(UserMapper.toDto(updatedUser));
     }
 
-    public void delete(User user) {
-        userService.delete(user);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable int id)
+    {
+        Optional<User> user = userService.findById(id);
+        if(!user.isEmpty()) {
+            userService.delete(user.get());
+            logger.debug("User with id = {} was successfully deleted.", id);
+        }
+        return ResponseEntity.noContent().build();
     }
 }

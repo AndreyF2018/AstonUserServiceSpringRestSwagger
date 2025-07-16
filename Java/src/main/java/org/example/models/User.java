@@ -9,10 +9,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(nullable = false)
     private String name;
     @Column(unique = true, nullable = false)
     private String email;
     private int age;
+    @Column(nullable = false)
     private LocalDateTime created_at;
 
     public User () {}
@@ -24,9 +26,19 @@ public class User {
         this. created_at = created_at;
     }
 
+    public User (String name, String email, int age) {
+        this.name = name;
+        this.email = email;
+        this.age = age;
+        this. created_at = LocalDateTime.now();
+    }
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
