@@ -1,7 +1,6 @@
 package org.example.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
@@ -11,8 +10,10 @@ public class UserDto {
     @NotBlank
     @Email
     private String email;
+    @Min(value = 1)
+    @Max(value = 100)
     private int age;
-    @NotBlank
+    @NotNull
     private LocalDateTime created_at;
 
     public String getName() {

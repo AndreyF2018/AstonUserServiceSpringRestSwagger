@@ -1,12 +1,12 @@
 package org.example.controllers;
 
+import jakarta.validation.Valid;
 import org.example.dto.UserDto;
 import org.example.dto.UserMapper;
 import org.example.models.User;
 import org.example.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> findById(@PathVariable int id) {
         Optional<User> user = userService.findById(id);
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> save(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto userDto) {
         User user = UserMapper.toEntity(userDto);
         User savedUser = userService.save(user);
         if (savedUser != null) {
@@ -64,7 +65,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> update (@PathVariable int id, @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> update (@PathVariable int id, @Valid @RequestBody UserDto userDto) {
         User user = UserMapper.toEntity(userDto);
         // Чтобы не создался дубликат
         user.setId(id);

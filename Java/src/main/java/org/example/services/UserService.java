@@ -1,12 +1,10 @@
 package org.example.services;
 
 import jakarta.transaction.Transactional;
-import org.example.dao.UserDao;
 import org.example.models.User;
 import org.example.repos.UserRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
