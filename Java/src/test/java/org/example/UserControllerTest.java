@@ -59,7 +59,7 @@ public class UserControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType("application/hal+json"))
                 .andExpect(jsonPath("$.email").value(testUser.getEmail()));
 
     }
@@ -79,7 +79,7 @@ public class UserControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users/email/test@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType("application/hal+json"))
                 .andExpect(jsonPath("$.email").value(testUser.getEmail()));
 
     }
@@ -99,10 +99,12 @@ public class UserControllerTest {
         Mockito.when(userService.findAll()).thenReturn(List.of(testUser1, testUser2));
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].email").value(testUser1.getEmail()))
-                .andExpect(jsonPath("$[1].email").value(testUser2.getEmail()));
+                .andExpect(content().contentType("application/hal+json"))
+                .andExpect(jsonPath("$._embedded.userDtoList.length()").value(2))
+                .andExpect(jsonPath("$._embedded.userDtoList[0].email").value(testUser1.getEmail()))
+                .andExpect(jsonPath("$._embedded.userDtoList[1].email").value(testUser2.getEmail()))
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._links.create-user.href").exists());
     }
 
     @Test
@@ -146,18 +148,19 @@ public class UserControllerTest {
     }
 
     @Test
-    public void delete_ValidUser_ReturnNoContent() throws Exception {
+    public void delete_ExistingUser_ReturnNoContent() throws Exception {
         User toDeleteUser = createTestUser(1);
+        Mockito.when(userService.findById(1)).thenReturn(Optional.of(toDeleteUser));
         Mockito.doNothing().when(userService).delete(toDeleteUser);
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/1"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    public void delete_InvalidUser_ReturnNoContent() throws Exception {
+    public void delete_NonExistingUser_ReturnNoContent() throws Exception {
         Mockito.when(userService.findById(1)).thenReturn(Optional.empty());
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/1"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNotFound());
     }
 
 
