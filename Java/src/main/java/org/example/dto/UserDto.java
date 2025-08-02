@@ -5,15 +5,15 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 public class UserDto {
-    @NotBlank
+    @NotBlank(message = "Name are required")
     private String name;
-    @NotBlank
-    @Email
+    @NotBlank (message = "Email are required")
+    @Email (message = "Email must to be valid")
     private String email;
-    @Min(value = 1)
-    @Max(value = 100)
+    @Min(value = 1, message = "Age must be greater than 1")
+    @Max(value = 100, message = "Age must be less than 100")
     private int age;
-    @NotNull
+    @NotNull (message = "Created_at are required")
     private LocalDateTime created_at;
 
     public String getName() {

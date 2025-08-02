@@ -4,7 +4,6 @@ import org.example.controllers.UserController;
 import org.example.models.User;
 import org.example.services.UserService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
@@ -108,7 +108,7 @@ public class UserControllerTest {
     @Test
     public void save_validUser_ReturnCreated() throws Exception {
         User savedUser = createTestUser(1);
-        Mockito.when(userService.save(Mockito.any(User.class))).thenReturn(savedUser);
+        Mockito.when(userService.save(any(User.class))).thenReturn(savedUser);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/users").contentType(MediaType.APPLICATION_JSON)
                 .content(testUserJson))
                 .andExpect(status().isCreated())
@@ -118,6 +118,7 @@ public class UserControllerTest {
 
     @Test
     public void save_InvalidUser_ReturnInternalServerError() throws Exception {
+        Mockito.when(userService.save(any(User.class))).thenThrow(new IllegalArgumentException());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidTestUserJson))
@@ -128,7 +129,7 @@ public class UserControllerTest {
     @Test
     public void update_ValidUser_ReturnOk() throws Exception {
         User updatedUser = createTestUser(1);
-        Mockito.when(userService.update(Mockito.any(User.class))).thenReturn(updatedUser);
+        Mockito.when(userService.update(any(User.class))).thenReturn(updatedUser);
         mockMvc.perform(MockMvcRequestBuilders.put("/api/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testUserJson))
